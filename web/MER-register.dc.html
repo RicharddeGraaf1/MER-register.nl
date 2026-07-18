@@ -11,8 +11,12 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Spectral:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css">
+<script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
 <style>
   *{box-sizing:border-box}
+  #mer-map .maplibregl-ctrl-attrib{font-size:10px}
+  .mer-cluster-count{font:600 12px 'Public Sans',sans-serif}
   html,body{margin:0}
   body{background:#FAFAF7;font-family:'Public Sans',system-ui,-apple-system,sans-serif}
   a{color:#0F4A37;text-decoration:none}
@@ -254,19 +258,10 @@
           <!-- KAART -->
           <sc-if value="{{ isMap }}" hint-placeholder-val="{{ false }}">
           <div>
-            <div style="display:flex;align-items:center;gap:8px;font-size:12.5px;color:#8A6A38;background:#FBF4E9;border:1px solid #EAD9BD;border-radius:10px;padding:9px 13px;margin-bottom:12px">
-              <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#B57A2D" stroke-width="1.4"/><path d="M8 4.5v5M8 11.4v.1" stroke="#B57A2D" stroke-width="1.5" stroke-linecap="round"/></svg>
-              <span>Kaart-placeholder. In productie: PDOK BRT-grijs via MapLibre. De pins tonen de <strong style="font-weight:600">{{ resultCount }}</strong> gefilterde trajecten — klik een pin om het traject te openen.</span>
+            <div style="display:flex;align-items:center;gap:8px;font-size:12.5px;color:#4B5A52;margin-bottom:10px">
+              <span><strong style="font-weight:600">{{ resultCount }}</strong> gefilterde trajecten op de kaart — punten worden op hoog zoomniveau samengevat tot cirkels; klik een cirkel om in te zoomen, klik een punt om het traject te openen.</span>
             </div>
-            <div style="position:relative;width:100%;aspect-ratio:4/3;max-height:620px;background:#EEF0EC;border:1px solid #E1E1D8;border-radius:14px;overflow:hidden;background-image:linear-gradient(#E4E7E1 1px,transparent 1px),linear-gradient(90deg,#E4E7E1 1px,transparent 1px);background-size:38px 38px">
-              <div style="position:absolute;inset:0;background:radial-gradient(ellipse 60% 70% at 45% 45%,rgba(255,255,255,.6),transparent)"></div>
-              <span style="position:absolute;left:16px;top:12px;font-size:11px;color:#A9B2AC;letter-spacing:.05em">NEDERLAND · schematisch</span>
-              <sc-for list="{{ pins }}" as="pin" hint-placeholder-count="8">
-                <button onClick="{{ pin.open }}" title="{{ pin.title }}" aria-label="{{ pin.title }}" style="position:absolute;left:{{ pin.leftPct }};top:{{ pin.topPct }};transform:translate(-50%,-100%);background:none;border:none;cursor:pointer;padding:0;filter:drop-shadow(0 2px 3px rgba(15,74,55,.35))">
-                  <svg width="26" height="34" viewBox="0 0 26 34" fill="none"><path d="M13 33C13 33 24 20.5 24 12.5C24 6.7 19.1 2 13 2C6.9 2 2 6.7 2 12.5C2 20.5 13 33 13 33Z" fill="#0F4A37" stroke="#fff" stroke-width="1.6"/><circle cx="13" cy="12.5" r="4" fill="#fff"/></svg>
-                </button>
-              </sc-for>
-            </div>
+            <div id="mer-map" style="width:100%;aspect-ratio:4/3;max-height:620px;background:#EEF0EC;border:1px solid #E1E1D8;border-radius:14px;overflow:hidden"></div>
           </div>
           </sc-if>
         </main>
@@ -492,7 +487,56 @@ class Component extends DCLogic {
     window.addEventListener('resize', this._onResize);
     this._onResize();
   }
-  componentWillUnmount(){ window.removeEventListener('keydown', this._onKey); window.removeEventListener('resize', this._onResize); }
+  componentWillUnmount(){ window.removeEventListener('keydown', this._onKey); window.removeEventListener('resize', this._onResize); if(this._map){ this._map.remove(); this._map=null; } }
+
+  // --- MapLibre-kaart (PDOK BRT-grijs + native clustering) ------------------
+  componentDidUpdate(){
+    if(this.state.view==='kaart' && this.state.loaded){ this._initMap(); this._syncMap(); }
+  }
+  _initMap(){
+    if(this._map || !window.maplibregl) return;
+    const el=document.getElementById('mer-map'); if(!el) return;
+    const map=new maplibregl.Map({
+      container:el,
+      style:{version:8, glyphs:'/fonts/{fontstack}/{range}.pbf',
+        sources:{pdok:{type:'raster',tileSize:256,minzoom:0,maxzoom:19,
+          tiles:['https://service.pdok.nl/brt/achtergrondkaart/wmts/v2_0/grijs/EPSG:3857/{z}/{x}/{y}.png'],
+          attribution:'© <a href="https://www.kadaster.nl/" target="_blank" rel="noopener">Kadaster</a> – PDOK BRT-Achtergrondkaart'}},
+        layers:[{id:'bg',type:'background',paint:{'background-color':'#F2EFE8'}},{id:'pdok',type:'raster',source:'pdok'}]},
+      center:[5.3,52.15], zoom:6.4, minZoom:6, maxZoom:17, attributionControl:false});
+    map.addControl(new maplibregl.AttributionControl({compact:true}),'bottom-right');
+    map.addControl(new maplibregl.NavigationControl({showCompass:false}),'top-right');
+    this._map=map; this._mapReady=false;
+    map.on('load',()=>{
+      map.addSource('pts',{type:'geojson',data:{type:'FeatureCollection',features:[]},cluster:true,clusterRadius:48,clusterMaxZoom:12});
+      map.addLayer({id:'clusters',type:'circle',source:'pts',filter:['has','point_count'],
+        paint:{'circle-color':'#FFFFFF','circle-stroke-color':'#0F4A37','circle-stroke-width':2,
+          'circle-radius':['step',['get','point_count'],15,10,19,50,24,200,30]}});
+      map.addLayer({id:'cluster-count',type:'symbol',source:'pts',filter:['has','point_count'],
+        layout:{'text-field':['get','point_count_abbreviated'],'text-font':['NotoSans'],'text-size':12},
+        paint:{'text-color':'#0F4A37'}});
+      map.addLayer({id:'pt',type:'circle',source:'pts',filter:['!',['has','point_count']],
+        paint:{'circle-color':'#0F4A37','circle-radius':6,'circle-stroke-color':'#fff','circle-stroke-width':2}});
+      map.on('click','clusters',(e)=>{
+        const f=map.queryRenderedFeatures(e.point,{layers:['clusters']})[0];
+        map.getSource('pts').getClusterExpansionZoom(f.properties.cluster_id).then(z=>map.easeTo({center:f.geometry.coordinates,zoom:z})).catch(()=>{});
+      });
+      map.on('click','pt',(e)=>{ this.setState({selectedId:e.features[0].properties.id}); });
+      for(const lyr of ['clusters','pt']){
+        map.on('mouseenter',lyr,()=>{map.getCanvas().style.cursor='pointer';});
+        map.on('mouseleave',lyr,()=>{map.getCanvas().style.cursor='';});
+      }
+      this._mapReady=true; this._syncMap();
+    });
+  }
+  _syncMap(){
+    const map=this._map; if(!map || !this._mapReady) return;
+    const src=map.getSource('pts'); if(!src) return;
+    const feats=(this._mapPins||[]).map(p=>({type:'Feature',properties:{id:p.id},geometry:{type:'Point',coordinates:[p.lng,p.lat]}}));
+    const key=feats.length+'|'+(this._mapPins[0]&&this._mapPins[0].id);
+    if(key!==this._mapKey){ src.setData({type:'FeatureCollection',features:feats}); this._mapKey=key; }
+    map.resize();
+  }
 
   fmtDate(d){ if(!d) return ''; const p=d.split('-'); return (+p[2])+' '+this.MONTHS[+p[1]-1]+' '+p[0]; }
   stepLabel(t){
@@ -595,13 +639,11 @@ class Component extends DCLogic {
       onKey: (e)=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); this.setState({selectedId:t.id}); } },
     }));
 
-    const pins=filt.map(t=>{
-      const [lat,lng]=t.coord;
-      const left=((lng-3.3)/(7.25-3.3))*100;
-      const top=((53.62-lat)/(53.62-50.72))*100;
-      return {leftPct:left.toFixed(2)+'%', topPct:top.toFixed(2)+'%',
-        title:t.titel+' — '+t.bevoegdGezag, open:()=>this.setState({selectedId:t.id})};
-    });
+    // Stash de gefilterde punten (met coördinaat) voor de MapLibre-kaart;
+    // componentDidUpdate -> _syncMap leest dit. Volledige set, niet de pagina.
+    this._mapPins = filt.filter(t=>t.coord && t.coord[0]!=null && t.coord[1]!=null)
+      .map(t=>({id:t.id, lat:t.coord[0], lng:t.coord[1]}));
+    const pins=[];
 
     // options
     const bgList=[...new Set(all.map(t=>t.bevoegdGezag))].sort((a,b)=>a.localeCompare(b,'nl'));

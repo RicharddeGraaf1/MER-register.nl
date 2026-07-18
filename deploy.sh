@@ -15,6 +15,7 @@ trap 'rm -rf "$STAGE"' EXIT
 for f in index.html MER-register.dc.html support.js mer-data.js; do
   cp "web/$f" "$STAGE"/
 done
+cp -r web/fonts "$STAGE"/fonts   # zelf-gehoste MapLibre-glyphs (cluster-labels)
 
 # Vangnet: weiger te deployen als er tóch een secret in de staging-map zit.
 if grep -rqE "cfut_|CLOUDFLARE_API_TOKEN|MER_PROD_URL|postgres://|postgresql://" "$STAGE"; then

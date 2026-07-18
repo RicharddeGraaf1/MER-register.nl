@@ -5,8 +5,10 @@
 -- gesleuteld op `slug` (de Commissie-URL-slug — altijd aanwezig en uniek), met
 -- `project_nr` als nullable UNIQUE kolom. Reden: niet elk Commissie-project heeft
 -- PDF's en dus een projectnummer. Dit spiegelt de harvest-store (schema_sqlite.sql)
--- 1-op-1. FK's naar core.bronhouder/vth.etl_run zijn kolommen (nullable), geen harde
--- constraint — bronhouder_id wordt bij een latere resolutie-stap gevuld.
+-- 1-op-1. Verwijzingen naar core.bronhouder/vth.etl_run zijn kolommen (nullable),
+-- geen harde constraint — bronhouder_code wordt door resolve_bronhouder.py gevuld
+-- (naam-match op core.bronhouder.overheidscode; ~72% event / ~75% project gedekt,
+-- de rest = Rijk/ministeries/parlement/buitenland die niet in core.bronhouder staan).
 
 CREATE SCHEMA IF NOT EXISTS mer;
 
@@ -17,7 +19,7 @@ CREATE TABLE IF NOT EXISTS mer.event (
     datum_publicatie   date,
     publicatieblad     text,
     bevoegd_gezag_naam text,
-    bronhouder_id      integer,          -- -> core.bronhouder (te resolveren)
+    bronhouder_code    text,             -- -> core.bronhouder.overheidscode (resolve_bronhouder.py)
     event_type         text,             -- afgeleid
     instrument         text,             -- afgeleid
     subject_taxonomie  text,
@@ -39,7 +41,7 @@ CREATE TABLE IF NOT EXISTS mer.project (
     project_nr       integer UNIQUE,
     titel            text NOT NULL,
     bevoegd_gezag    text,
-    bronhouder_id    integer,           -- -> core.bronhouder (te resolveren)
+    bronhouder_code  text,             -- -> core.bronhouder.overheidscode (resolve_bronhouder.py)
     initiatiefnemer  text,
     start_advisering date,
     advies_type      text,
