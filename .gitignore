@@ -1,0 +1,27 @@
+# Harvest-output (gegenereerd, niet in git)
+harvest/data/*.json
+harvest/data/*.csv
+*.pyc
+__pycache__/
+
+# Env / secrets — NOOIT committen
+.env
+.env.*
+!.env.example
+
+# Node / build (zodra de web-frontend er is)
+node_modules/
+web/dist/
+web/.wrangler/
+
+# Editor
+.vscode/
+.idea/
+*.log
+
+# Gegenereerde harvest-store (regenereerbaar via de loaders)
+harvest/data/*
+!harvest/data/.gitkeep
+
+# Wrangler-cache
+.wrangler/
