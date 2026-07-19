@@ -440,6 +440,26 @@
           </div>
         </sc-if>
 
+        <!-- ONDERLIGGENDE REGELING -->
+        <sc-if value="{{ selected.hasRegelingen }}" hint-placeholder-val="{{ false }}">
+        <h3 style="margin:26px 0 12px;font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:#8A9791;font-weight:700">Onderliggende regeling</h3>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <sc-for list="{{ selected.regelingen }}" as="r" hint-placeholder-count="1">
+            <a href="{{ r.link }}" target="_blank" rel="noopener" style="display:flex;align-items:center;justify-content:space-between;gap:12px;background:#fff;border:1px solid #E7E7DF;border-radius:11px;padding:12px 15px" style-hover="border-color:#0F4A37">
+              <span style="min-width:0">
+                <span style="display:block;font-size:14px;font-weight:600;color:#14231C;line-height:1.35">{{ r.opschrift }}</span>
+                <span style="font-size:12px;color:#8A9791">{{ r.documenttype }} · bekijk in het DSO</span>
+              </span>
+              <span style="flex:none;display:flex;align-items:center;gap:8px">
+                <span style="{{ r.zekerStyle }}" title="Zekerheid van de automatische koppeling">{{ r.zekerLabel }}</span>
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" style="color:#0F4A37"><path d="M6 3h7v7M13 3L6.5 9.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </span>
+            </a>
+          </sc-for>
+          <div style="font-size:11.5px;color:#A9B2AC;line-height:1.45">Automatisch gekoppeld op bevoegd gezag en naam — geen officiële koppeling. Het zekerheidslabel geeft aan hoe betrouwbaar de match is.</div>
+        </div>
+        </sc-if>
+
         <!-- DEEPLINKS -->
         <h3 style="margin:26px 0 12px;font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:#8A9791;font-weight:700">Officiële bronnen</h3>
         <div style="display:flex;gap:10px;flex-wrap:wrap">
@@ -679,11 +699,19 @@ class Component extends DCLogic {
             ? 'font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#fff;background:#0F4A37;border-radius:6px;padding:3px 9px'
             : 'font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#5C7A6C;background:#EFF1ED;border-radius:6px;padding:3px 9px',
         }));
+      const regelingen=(selT.onderliggendeRegelingen||[]).map(r=>{
+        const z=r.zekerheid||0;
+        return {opschrift:r.opschrift, documenttype:r.documenttype, link:r.link,
+          zekerLabel: z>=0.9?'hoge zekerheid':z>=0.7?'redelijke zekerheid':'indicatief',
+          zekerStyle: 'font-size:11px;font-weight:600;border-radius:6px;padding:2px 8px;white-space:nowrap;'+(
+            z>=0.9?'background:#EEF3F0;color:#0F4A37':z>=0.7?'background:#FBF4E9;color:#8A6A38':'background:#F2F2EC;color:#7A867E')};
+      });
       selected={
         titel:selT.titel, bg:selT.bevoegdGezag, initiatiefnemer:selT.initiatiefnemer,
         instrument:selT.instrument, provincie:selT.provincie, phases:selT.phases,
         hasGaps:gaps>0, gapText:gaps+' van 4 processtappen '+(gaps===1?'is':'zijn')+' niet terug te vinden in openbare bronnen.',
         docGroups:groups, hasDocs:groups.length>0, noDocs:groups.length===0,
+        regelingen:regelingen, hasRegelingen:regelingen.length>0,
         obLink:(selT.events[0]&&selT.events[0].link)||'https://zoek.officielebekendmakingen.nl',
         cmLink:'https://www.commissiemer.nl',
       };
