@@ -24593,8 +24593,8 @@ export const trajecten = [
    }
   ],
   "onderliggendeRegelingen": [],
-  "bevoegdGezagUniform": "Fryslan",
-  "bronhouderCode": null
+  "bevoegdGezagUniform": "Provincie Fryslân",
+  "bronhouderCode": "pv21"
  },
  {
   "id": "baanverlenging-luchthaven-eelde",
@@ -27816,8 +27816,8 @@ export const trajecten = [
    }
   ],
   "onderliggendeRegelingen": [],
-  "bevoegdGezagUniform": "Fryslan",
-  "bronhouderCode": null
+  "bevoegdGezagUniform": "Provincie Fryslân",
+  "bronhouderCode": "pv21"
  },
  {
   "id": "stortplaats-t-klooster-te-nieuwegein",
@@ -28411,8 +28411,8 @@ export const trajecten = [
    }
   ],
   "onderliggendeRegelingen": [],
-  "bevoegdGezagUniform": "Fryslan",
-  "bronhouderCode": null
+  "bevoegdGezagUniform": "Provincie Fryslân",
+  "bronhouderCode": "pv21"
  },
  {
   "id": "grootschalige-mestverwerkingsinrichting-promest-te-helmond",
@@ -28876,8 +28876,8 @@ export const trajecten = [
    }
   ],
   "onderliggendeRegelingen": [],
-  "bevoegdGezagUniform": "Fryslan, Wetterskip Fryslân",
-  "bronhouderCode": null
+  "bevoegdGezagUniform": "Provincie Fryslân",
+  "bronhouderCode": "pv21"
  },
  {
   "id": "uitbreiding-afvalverwerking-van-vliet-te-wateringen",
@@ -29543,8 +29543,8 @@ export const trajecten = [
    }
   ],
   "onderliggendeRegelingen": [],
-  "bevoegdGezagUniform": "Fryslan",
-  "bronhouderCode": null
+  "bevoegdGezagUniform": "Provincie Fryslân",
+  "bronhouderCode": "pv21"
  },
  {
   "id": "pluimveehouderij-mts-vrenken-lormans-te-leveroy",
@@ -29594,8 +29594,8 @@ export const trajecten = [
    }
   ],
   "onderliggendeRegelingen": [],
-  "bevoegdGezagUniform": "Fryslan",
-  "bronhouderCode": null
+  "bevoegdGezagUniform": "Provincie Fryslân",
+  "bronhouderCode": "pv21"
  },
  {
   "id": "natura-2000-beheerplan-veerse-meer",
@@ -34787,8 +34787,8 @@ export const trajecten = [
    }
   ],
   "onderliggendeRegelingen": [],
-  "bevoegdGezagUniform": "Fryslan",
-  "bronhouderCode": null
+  "bevoegdGezagUniform": "Provincie Fryslân",
+  "bronhouderCode": "pv21"
  },
  {
   "id": "spoorlijn-voor-goederenvervoer-betuweroute",
@@ -37304,8 +37304,8 @@ export const trajecten = [
    }
   ],
   "onderliggendeRegelingen": [],
-  "bevoegdGezagUniform": "Fryslan",
-  "bronhouderCode": null
+  "bevoegdGezagUniform": "Provincie Fryslân",
+  "bronhouderCode": "pv21"
  },
  {
   "id": "golfbaan-eemland-te-eemnes",
@@ -38085,8 +38085,8 @@ export const trajecten = [
    }
   ],
   "onderliggendeRegelingen": [],
-  "bevoegdGezagUniform": "Fryslan",
-  "bronhouderCode": null
+  "bevoegdGezagUniform": "Provincie Fryslân",
+  "bronhouderCode": "pv21"
  },
  {
   "id": "zuiveringsslibplan-provincie-flevoland-1988-1992-1991-1996",
@@ -38761,8 +38761,8 @@ export const trajecten = [
    }
   ],
   "onderliggendeRegelingen": [],
-  "bevoegdGezagUniform": "Fryslan, Wetterskip Fryslân",
-  "bronhouderCode": null
+  "bevoegdGezagUniform": "Provincie Fryslân",
+  "bronhouderCode": "pv21"
  },
  {
   "id": "landinrichting-bergen-egmond-schoorl",
@@ -38985,8 +38985,8 @@ export const trajecten = [
    }
   ],
   "onderliggendeRegelingen": [],
-  "bevoegdGezagUniform": "Fryslan, Wetterskip Fryslân",
-  "bronhouderCode": null
+  "bevoegdGezagUniform": "Provincie Fryslân",
+  "bronhouderCode": "pv21"
  },
  {
   "id": "landinrichting-westzaan",
@@ -39504,8 +39504,8 @@ export const trajecten = [
    }
   ],
   "onderliggendeRegelingen": [],
-  "bevoegdGezagUniform": "Fryslan",
-  "bronhouderCode": null
+  "bevoegdGezagUniform": "Provincie Fryslân",
+  "bronhouderCode": "pv21"
  },
  {
   "id": "verbetering-waterkering-zuidelijk-gebied-afgedamde-maas",
@@ -45416,8 +45416,8 @@ export const trajecten = [
    }
   ],
   "onderliggendeRegelingen": [],
-  "bevoegdGezagUniform": "Fryslan, Wetterskip Fryslân",
-  "bronhouderCode": null
+  "bevoegdGezagUniform": "Provincie Fryslân",
+  "bronhouderCode": "pv21"
  },
  {
   "id": "baggerspecieberging-ketelmeergebied",
@@ -45863,8 +45863,8 @@ export const trajecten = [
    }
   ],
   "onderliggendeRegelingen": [],
-  "bevoegdGezagUniform": "Fryslan",
-  "bronhouderCode": null
+  "bevoegdGezagUniform": "Provincie Fryslân",
+  "bronhouderCode": "pv21"
  },
  {
   "id": "ruilverkaveling-rossum-oost",
@@ -45980,8 +45980,8 @@ export const trajecten = [
    }
   ],
   "onderliggendeRegelingen": [],
-  "bevoegdGezagUniform": "Fryslan, Wetterskip Fryslân",
-  "bronhouderCode": null
+  "bevoegdGezagUniform": "Provincie Fryslân",
+  "bronhouderCode": "pv21"
  },
  {
   "id": "grootschalige-windenergieopwekking-friesland-windstreek",
@@ -46008,8 +46008,8 @@ export const trajecten = [
    }
   ],
   "onderliggendeRegelingen": [],
-  "bevoegdGezagUniform": "Fryslan",
-  "bronhouderCode": null
+  "bevoegdGezagUniform": "Provincie Fryslân",
+  "bronhouderCode": "pv21"
  },
  {
   "id": "verbetering-waalbandijk-van-gameren-tot-nieuwaal",
@@ -46394,8 +46394,8 @@ export const trajecten = [
    }
   ],
   "onderliggendeRegelingen": [],
-  "bevoegdGezagUniform": "Fryslan",
-  "bronhouderCode": null
+  "bevoegdGezagUniform": "Provincie Fryslân",
+  "bronhouderCode": "pv21"
  },
  {
   "id": "gft-bewerkingsinrichting-koningspleij-noord",
@@ -46732,8 +46732,8 @@ export const trajecten = [
    }
   ],
   "onderliggendeRegelingen": [],
-  "bevoegdGezagUniform": "Fryslan",
-  "bronhouderCode": null
+  "bevoegdGezagUniform": "Provincie Fryslân",
+  "bronhouderCode": "pv21"
  },
  {
   "id": "verbetering-aansluiting-n201-x-a4-te-haarlemmermeer",
@@ -46902,8 +46902,8 @@ export const trajecten = [
    }
   ],
   "onderliggendeRegelingen": [],
-  "bevoegdGezagUniform": "Fryslan",
-  "bronhouderCode": null
+  "bevoegdGezagUniform": "Provincie Fryslân",
+  "bronhouderCode": "pv21"
  },
  {
   "id": "interprovinciale-structuurvisie-ede-veenendaal-isev",
@@ -49920,8 +49920,8 @@ export const trajecten = [
    }
   ],
   "onderliggendeRegelingen": [],
-  "bevoegdGezagUniform": "Fryslan, Wetterskip Fryslân",
-  "bronhouderCode": null
+  "bevoegdGezagUniform": "Provincie Fryslân",
+  "bronhouderCode": "pv21"
  },
  {
   "id": "dijkverbetering-achter-ramspol-deelgebied-zwolle",
@@ -50075,8 +50075,8 @@ export const trajecten = [
    }
   ],
   "onderliggendeRegelingen": [],
-  "bevoegdGezagUniform": "Fryslan",
-  "bronhouderCode": null
+  "bevoegdGezagUniform": "Provincie Fryslân",
+  "bronhouderCode": "pv21"
  },
  {
   "id": "rail-21-project-en-hogesnelheidslijn-oost-arnhem-duitse-grens",
@@ -51885,8 +51885,8 @@ export const trajecten = [
    }
   ],
   "onderliggendeRegelingen": [],
-  "bevoegdGezagUniform": "Fryslan",
-  "bronhouderCode": null
+  "bevoegdGezagUniform": "Provincie Fryslân",
+  "bronhouderCode": "pv21"
  },
  {
   "id": "woonwijk-delftlanden-te-emmen",
@@ -52190,8 +52190,8 @@ export const trajecten = [
    }
   ],
   "onderliggendeRegelingen": [],
-  "bevoegdGezagUniform": "Fryslan, Waterschap Friesland",
-  "bronhouderCode": null
+  "bevoegdGezagUniform": "Provincie Fryslân",
+  "bronhouderCode": "pv21"
  },
  {
   "id": "woningbouw-de-draai-te-heerhugowaard",
@@ -52261,8 +52261,8 @@ export const trajecten = [
    }
   ],
   "onderliggendeRegelingen": [],
-  "bevoegdGezagUniform": "Fryslan",
-  "bronhouderCode": null
+  "bevoegdGezagUniform": "Provincie Fryslân",
+  "bronhouderCode": "pv21"
  },
  {
   "id": "woningbouw-bornsche-maten",
@@ -52916,8 +52916,8 @@ export const trajecten = [
    }
   ],
   "onderliggendeRegelingen": [],
-  "bevoegdGezagUniform": "Fryslan",
-  "bronhouderCode": null
+  "bevoegdGezagUniform": "Provincie Fryslân",
+  "bronhouderCode": "pv21"
  },
  {
   "id": "dekgrondberging-bij-grensmaasproject-in-aan-de-maas-meerssen",
@@ -54117,8 +54117,8 @@ export const trajecten = [
    }
   ],
   "onderliggendeRegelingen": [],
-  "bevoegdGezagUniform": "Fryslan",
-  "bronhouderCode": null
+  "bevoegdGezagUniform": "Provincie Fryslân",
+  "bronhouderCode": "pv21"
  },
  {
   "id": "actualisering-vinex",
@@ -56950,8 +56950,8 @@ export const trajecten = [
    }
   ],
   "onderliggendeRegelingen": [],
-  "bevoegdGezagUniform": "Fryslan",
-  "bronhouderCode": null
+  "bevoegdGezagUniform": "Provincie Fryslân",
+  "bronhouderCode": "pv21"
  },
  {
   "id": "windpark-hagenwind-te-aalten",
@@ -59668,8 +59668,8 @@ export const trajecten = [
    }
   ],
   "onderliggendeRegelingen": [],
-  "bevoegdGezagUniform": "Fryslan, Groningen",
-  "bronhouderCode": null
+  "bevoegdGezagUniform": "Provincie Fryslân",
+  "bronhouderCode": "pv21"
  },
  {
   "id": "rijn-gouwelijn-west",
@@ -61211,8 +61211,8 @@ export const trajecten = [
    }
   ],
   "onderliggendeRegelingen": [],
-  "bevoegdGezagUniform": "Fryslan, Wetterskip Fryslân",
-  "bronhouderCode": null
+  "bevoegdGezagUniform": "Provincie Fryslân",
+  "bronhouderCode": "pv21"
  },
  {
   "id": "offshore-windpark-p15-wp",
@@ -61523,8 +61523,8 @@ export const trajecten = [
    }
   ],
   "onderliggendeRegelingen": [],
-  "bevoegdGezagUniform": "Fryslan",
-  "bronhouderCode": null
+  "bevoegdGezagUniform": "Provincie Fryslân",
+  "bronhouderCode": "pv21"
  },
  {
   "id": "den-haag-nieuw-centraal",
@@ -93904,8 +93904,8 @@ export const trajecten = [
    }
   ],
   "onderliggendeRegelingen": [],
-  "bevoegdGezagUniform": "Fryslan",
-  "bronhouderCode": null
+  "bevoegdGezagUniform": "Provincie Fryslân",
+  "bronhouderCode": "pv21"
  },
  {
   "id": "recreatieve-gebiedsontwikkeling-appelscha-hoog",
@@ -95603,8 +95603,8 @@ export const trajecten = [
    }
   ],
   "onderliggendeRegelingen": [],
-  "bevoegdGezagUniform": "Fryslan, wetterskip Fryslan",
-  "bronhouderCode": null
+  "bevoegdGezagUniform": "Provincie Fryslân",
+  "bronhouderCode": "pv21"
  },
  {
   "id": "locatiekeuze-grootschalige-oppervlaktewaterwinning-overijssel",

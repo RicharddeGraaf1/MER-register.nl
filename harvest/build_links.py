@@ -5,9 +5,15 @@ blocking op genormaliseerd bevoegd gezag → scoren op titel-overlap.
     python build_links.py
 """
 import re
+import unicodedata
 from datetime import date
 
 import lib
+
+
+def deaccent(s):
+    """Strip diacritics (Fryslân -> Fryslan) zodat accent-varianten matchen."""
+    return "".join(c for c in unicodedata.normalize("NFKD", s or "") if not unicodedata.combining(c))
 
 # publicatiebladen die echte besluiten/kennisgevingen dragen (geen parlementaire ruis)
 BESLUIT_BLADEN = ("Gemeenteblad", "Provinciaal blad", "Staatscourant",
@@ -27,7 +33,7 @@ MAANDEN = {m: i for i, m in enumerate(
 def norm_bg(s):
     if not s:
         return ""
-    s = s.lower()
+    s = deaccent(s.lower())
     s = re.split(r",|/|;", s)[0]                        # eerste BG bij meerdere
     s = re.sub(r"\b(gemeente|provincie|de|het)\b", " ", s)
     if "rijkswaterstaat" in s or "ministerie" in s or "minister" in s:
@@ -38,7 +44,7 @@ def norm_bg(s):
 
 
 def tokens(titel):
-    return {w for w in re.findall(r"[a-zà-ÿ0-9]{3,}", (titel or "").lower()) if w not in STOP}
+    return {w for w in re.findall(r"[a-z0-9]{3,}", deaccent((titel or "").lower())) if w not in STOP}
 
 
 def parse_dutch_date(s):

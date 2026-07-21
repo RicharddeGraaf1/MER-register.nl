@@ -8,6 +8,7 @@ strip "Gemeente/Provincie/Waterschap"-prefix + eerste deel vóór komma + lower.
 """
 import os
 import re
+import unicodedata
 
 import psycopg
 
@@ -15,7 +16,8 @@ import psycopg
 def norm(s):
     if not s:
         return ""
-    s = s.lower().split(",")[0].split(" - ")[0]
+    s = "".join(c for c in unicodedata.normalize("NFKD", s.lower()) if not unicodedata.combining(c))
+    s = s.split(",")[0].split(" - ")[0]
     s = re.sub(r"\b(gemeente|provincie|waterschap|hoogheemraadschap|het|de)\b", " ", s)
     return re.sub(r"\s+", " ", s).strip()
 
