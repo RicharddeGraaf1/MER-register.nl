@@ -597,7 +597,8 @@ class Component extends DCLogic {
     const soorten=[...new Set(t.documenten.map(d=>d.soort))];
     const last=this.latest(t);
     const years=[...new Set(t.events.map(e=>+e.datum.slice(0,4)))].sort();
-    return {...t, phases, soorten, hasMER:soorten.includes('MER'), last, years, firstYear:years[0]||null};
+    return {...t, phases, soorten, hasMER:soorten.includes('MER'), last, years, firstYear:years[0]||null,
+      bgU: t.bevoegdGezagUniform || t.bevoegdGezag};
   }
   toggle(key,val){
     this.setState(s=>{ const a=s[key]; return {[key]: a.includes(val)?a.filter(x=>x!==val):[...a,val], page:1}; });
@@ -625,8 +626,8 @@ class Component extends DCLogic {
     const q=S.q.trim().toLowerCase();
 
     let filt=all.filter(t=>{
-      if(q){ const hay=(t.titel+' '+t.bevoegdGezag+' '+t.initiatiefnemer+' '+t.provincie).toLowerCase(); if(!hay.includes(q)) return false; }
-      if(S.bg.length && !S.bg.includes(t.bevoegdGezag)) return false;
+      if(q){ const hay=(t.titel+' '+t.bgU+' '+t.bevoegdGezag+' '+t.initiatiefnemer+' '+t.provincie).toLowerCase(); if(!hay.includes(q)) return false; }
+      if(S.bg.length && !S.bg.includes(t.bgU)) return false;
       if(S.instr.length && !S.instr.includes(t.instrument)) return false;
       if(S.etype.length && !t.events.some(e=>S.etype.includes(e.type))) return false;
       if(S.provs.length && !S.provs.includes(t.provincie)) return false;
@@ -650,7 +651,7 @@ class Component extends DCLogic {
       : 'font-size:11px;color:#5C7A6C;background:#EEF3F0;border:1px solid #DCE6E0;border-radius:6px;padding:2px 8px';
 
     const results=slice.map(t=>({
-      titel:t.titel, bg:t.bevoegdGezag, instrument:t.instrument, provincie:t.provincie,
+      titel:t.titel, bg:t.bgU, instrument:t.instrument, provincie:t.provincie,
       latestLabel: t.last ? this.stepLabel(t.last.type)+' · '+this.fmtDate(t.last.datum) : 'Geen processtap bekend',
       phaseDots: t.phases.map(p=>({dotStyle:this.dotStyle(p)})),
       docTags: t.soorten.map(s=>({label:DOCLBL[s]||s, style:tagStyle(s==='MER')})),
@@ -666,9 +667,10 @@ class Component extends DCLogic {
     const pins=[];
 
     // options
-    const bgList=[...new Set(all.map(t=>t.bevoegdGezag))].sort((a,b)=>a.localeCompare(b,'nl'));
+    const bgList=[...new Set(all.map(t=>t.bgU))].sort((a,b)=>a.localeCompare(b,'nl'));
     const bgOptions=bgList.filter(b=>b.toLowerCase().includes(S.bgSearch.toLowerCase()))
-      .map(b=>({label:b, count:all.filter(t=>t.bevoegdGezag===b).length, checked:S.bg.includes(b), toggle:()=>this.toggle('bg',b)}));
+      .map(b=>({label:b, count:all.filter(t=>t.bgU===b).length, checked:S.bg.includes(b), toggle:()=>this.toggle('bg',b)}))
+      .sort((a,b)=>b.count-a.count);
     const instrOptions=this.INSTR.map(v=>({label:v, count:all.filter(t=>t.instrument===v).length, checked:S.instr.includes(v), toggle:()=>this.toggle('instr',v)}));
     const etypeOptions=this.ETYPE.map(v=>({label:this.stepLabel(v), count:all.filter(t=>t.events.some(e=>e.type===v)).length, checked:S.etype.includes(v), toggle:()=>this.toggle('etype',v)}));
     const provOptions=this.PROV.map(v=>({label:v, count:all.filter(t=>t.provincie===v).length, checked:S.provs.includes(v), toggle:()=>this.toggle('provs',v)})).filter(o=>o.count>0);
@@ -707,7 +709,7 @@ class Component extends DCLogic {
             z>=0.9?'background:#EEF3F0;color:#0F4A37':z>=0.7?'background:#FBF4E9;color:#8A6A38':'background:#F2F2EC;color:#7A867E')};
       });
       selected={
-        titel:selT.titel, bg:selT.bevoegdGezag, initiatiefnemer:selT.initiatiefnemer,
+        titel:selT.titel, bg:selT.bgU, initiatiefnemer:selT.initiatiefnemer,
         instrument:selT.instrument, provincie:selT.provincie, phases:selT.phases,
         hasGaps:gaps>0, gapText:gaps+' van 4 processtappen '+(gaps===1?'is':'zijn')+' niet terug te vinden in openbare bronnen.',
         docGroups:groups, hasDocs:groups.length>0, noDocs:groups.length===0,
@@ -718,7 +720,7 @@ class Component extends DCLogic {
     }
 
     // cijfers
-    const uniqBg=new Set(all.map(t=>t.bevoegdGezag)).size;
+    const uniqBg=new Set(all.map(t=>t.bgU)).size;
     const metMER=all.filter(t=>t.hasMER).length;
     const geenDossier=all.filter(t=>t.documenten.length===0).length;
     const kpis=[
