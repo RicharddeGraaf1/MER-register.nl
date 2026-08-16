@@ -12,7 +12,9 @@ STAGE="$(mktemp -d)"
 trap 'rm -rf "$STAGE"' EXIT
 
 # Alleen de publieke frontend-assets (geen README/.gitkeep/dotfiles).
-for f in index.html MER-register.dc.html support.js mer-data.js; do
+# LET OP: deze lijst is expliciet. Een nieuw bestand in web/ komt hier niet
+# vanzelf in — og.jpg (het deelplaatje uit og:image) moest er apart bij.
+for f in index.html MER-register.dc.html support.js mer-data.js og.jpg; do
   cp "web/$f" "$STAGE"/
 done
 cp -r web/fonts "$STAGE"/fonts   # zelf-gehoste MapLibre-glyphs (cluster-labels)
