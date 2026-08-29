@@ -3,9 +3,13 @@
 --
 -- Sleutel-correctie na het laden van de praktijk (2026-07-17): `project` wordt
 -- gesleuteld op `slug` (de Commissie-URL-slug — altijd aanwezig en uniek), met
--- `project_nr` als nullable UNIQUE kolom. Reden: niet elk Commissie-project heeft
+-- `project_nr` als gewone nullable kolom. Reden: niet elk Commissie-project heeft
 -- PDF's en dus een projectnummer. Dit spiegelt de harvest-store (schema_sqlite.sql)
--- 1-op-1. Verwijzingen naar core.bronhouder/vth.etl_run zijn kolommen (nullable),
+-- 1-op-1.
+--
+-- De UNIQUE op `project_nr` is op 2026-08-28 verwijderd: nummer 3818 bleek onder
+-- twee slugs te bestaan en liet `load-mer` hard afbreken. Slug is de sleutel,
+-- het projectnummer is een attribuut. Verwijzingen naar core.bronhouder/vth.etl_run zijn kolommen (nullable),
 -- geen harde constraint — bronhouder_code wordt door resolve_bronhouder.py gevuld
 -- (naam-match op core.bronhouder.overheidscode; ~72% event / ~75% project gedekt,
 -- de rest = Rijk/ministeries/parlement/buitenland die niet in core.bronhouder staan).
@@ -38,7 +42,13 @@ CREATE INDEX IF NOT EXISTS idx_mer_event_titel_fts  ON mer.event USING gin (to_t
 -- Kanaal B — Commissie m.e.r.-projecten
 CREATE TABLE IF NOT EXISTS mer.project (
     slug             text PRIMARY KEY,
-    project_nr       integer UNIQUE,
+    -- GEEN UNIQUE: de Commissie m.e.r. publiceert soms twee adviespagina's
+    -- onder hetzelfde projectnummer. Gemeten 2026-08-28 op nr 3818
+    -- (Verbindingen Aanlanding Wind op Zee 2031-2040), dat onder twee slugs
+    -- in de sitemap staat met verschillend bevoegd gezag. De UNIQUE liet
+    -- `load-mer` toen hard afbreken. De harvest-store (schema_sqlite.sql) had
+    -- hem nooit; Postgres week af van de laag die hij 1-op-1 zou spiegelen.
+    project_nr       integer,
     titel            text NOT NULL,
     bevoegd_gezag    text,
     bronhouder_code  text,             -- -> core.bronhouder.overheidscode (resolve_bronhouder.py)

@@ -56,6 +56,46 @@ def _nieuwste_publicatie(sq) -> str | None:
     return r[0] if r else None
 
 
+def _nieuwste_bij_bron(timeout: int = 20) -> tuple[str | None, str]:
+    """Vraag KOOP wat de nieuwste MER-publicatie is. Eén SRU-call.
+
+    Waarom dit er is: tot 2026-08-29 keek de poort alleen naar de *leeftijd* van
+    de nieuwste publicatie in de store (`--max-dagen 14`). Die drempel kan een
+    stille bron niet van een stille harvest onderscheiden. Op 28-08 was de store
+    zojuist volledig gesweept (2.261 van 2.261 beschikbaar) en stond de poort tóch
+    op rood, puur omdat KOOP sinds 6 augustus geen MER-titel had gepubliceerd.
+    `--force-preflight` was dan de enige uitweg — en een poort die je elke keer
+    moet forceren, bewaakt niets meer.
+
+    De juiste vraag is niet "hoe oud is het nieuwste item" maar "heeft de bron
+    iets wat wij niet hebben". Retourneert (datum, toelichting); bij een
+    onbereikbare bron retourneert hij (None, reden) en valt de aanroeper terug op
+    de leeftijdsdrempel.
+    """
+    import re
+    import urllib.parse
+    import urllib.request
+    SRU = "https://repository.overheid.nl/sru"
+    QUERY = ('dt.title any "milieueffectrapport milieueffectrapportage"'
+             ' sortBy dt.date/sort.descending')
+    params = urllib.parse.urlencode({
+        "operation": "searchRetrieve", "version": "2.0",
+        "maximumRecords": 1, "startRecord": 1, "query": QUERY,
+    })
+    req = urllib.request.Request(
+        f"{SRU}?{params}",
+        headers={"User-Agent": "mer-register-stand/1.0 "
+                               "(contact: richard.de.graaf@conteo-consulting.nl)"})
+    try:
+        xml = urllib.request.urlopen(req, timeout=timeout).read().decode("utf-8", "replace")
+    except Exception as e:
+        return None, f"bron niet bereikbaar ({str(e)[:40]})"
+    m = re.search(r"<dcterms:date[^>]*>(\d{4}-\d{2}-\d{2})", xml) or         re.search(r"<dt:date[^>]*>(\d{4}-\d{2}-\d{2})", xml) or         re.search(r">(\d{4}-\d{2}-\d{2})<", xml)
+    if not m:
+        return None, "kon de datum niet uit het SRU-antwoord lezen"
+    return m.group(1), ""
+
+
 def _prod_stand(events_lokaal: int) -> tuple[int | None, str]:
     """Telling van mer.event op prod. Retourneert (telling, toelichting)."""
     url = os.environ.get("MER_PROD_URL")
@@ -81,6 +121,9 @@ def main() -> int:
     p.add_argument("--max-dagen", type=int, default=14,
                    help="hoe oud de nieuwste KOOP-publicatie mag zijn (default 14)")
     p.add_argument("--json", action="store_true", help="machineleesbaar")
+    p.add_argument("--geen-bron", action="store_true",
+                   help="vraag KOOP niet; val terug op de leeftijdsdrempel. "
+                        "Voor offline gebruik -- niet als poort.")
     a = p.parse_args()
 
     if not STORE.exists():
@@ -108,7 +151,23 @@ def main() -> int:
             dagen_oud = (date.today() - date.fromisoformat(nieuwste[:10])).days
         except ValueError:
             pass
-    harvest_achter = dagen_oud is None or dagen_oud > a.max_dagen
+    # Eerst de bron zelf vragen; dat is de enige meting die een stille bron van
+    # een stille harvest onderscheidt. Pas als de bron onbereikbaar is, terug naar
+    # de leeftijdsdrempel -- die is een noodrem, geen norm.
+    bron_datum, bron_reden = (None, "overgeslagen (--geen-bron)")
+    if not a.geen_bron:
+        bron_datum, bron_reden = _nieuwste_bij_bron()
+
+    if bron_datum and nieuwste:
+        # Store gelijk of vóór op de bron = bij, ongeacht hoe oud het nieuwste
+        # item is. Loopt de store achter, dan is er echt iets op te halen.
+        harvest_achter = str(nieuwste)[:10] < bron_datum
+        bron_oordeel = ("store is bij de bron" if not harvest_achter
+                        else f"bron heeft nieuwere publicaties (tot {bron_datum})")
+    else:
+        harvest_achter = dagen_oud is None or dagen_oud > a.max_dagen
+        bron_oordeel = (f"bron niet gebruikt: {bron_reden}; teruggevallen op de "
+                        f"leeftijdsdrempel van {a.max_dagen} dagen")
 
     prod_events, prod_reden = _prod_stand(events)
 
@@ -119,6 +178,8 @@ def main() -> int:
         "projecten": projecten,
         "nieuwste_publicatie": nieuwste,
         "dagen_oud": dagen_oud,
+        "bron_nieuwste": bron_datum,
+        "bron_oordeel": bron_oordeel,
         "harvest_achter": harvest_achter,
         "store_gewijzigd": store_mtime.isoformat(timespec="seconds"),
         "export_gewijzigd": export_mtime.isoformat(timespec="seconds"),
@@ -149,6 +210,8 @@ def main() -> int:
         verschil = prod_events - events
         print(f"  mer.event op prod                   {prod_events:>7}   "
               f"({verschil:+d} t.o.v. de store, informatief)")
+    print()
+    print(f"  bron (KOOP SRU)               {str(bron_datum or '?'):>12}  {bron_oordeel}")
     print()
     print("ACHTER — draai stap 6d vóór publiceren (OCD-runbook)"
           if achter else "BIJ — de export past bij de harvest; publiceren mag.")
