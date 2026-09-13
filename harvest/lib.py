@@ -52,6 +52,30 @@ def http_get(url, base_delay=1.0, timeout=60):
                 time.sleep(wait)
                 continue
             raise
+        except (TimeoutError, urllib.error.URLError) as e:
+            # Sinds 2026-09-13. Hiervoor ving deze lus alleen HTTPError, en een
+            # socket-timeout glipte er dus langs: load_events.py viel om op
+            # pagina 1250 van 2266 met "The read operation timed out" en liet de
+            # harvest halverwege staan. `stand.py` meldt dan ACHTER, niet "de
+            # vorige poging is geklapt" -- en zo liep kanaal A dagen achter
+            # zonder dat iemand het zag.
+            #
+            # Dit is de spiegel van de noodrem in de OCD-loader: daar ging het om
+            # te lang doorgaan met een fout die niet overgaat, hier om te vroeg
+            # stoppen bij een fout die dat wel doet. Een retry-lus hoort dat
+            # onderscheid te maken.
+            #
+            # Let op: HTTPError is een subklasse van URLError, dus deze except
+            # MOET onder die van HTTPError staan -- anders vangt hij de 429/503
+            # weg en verdwijnt de Retry-After-afhandeling.
+            strikes += 1
+            if strikes >= MAX_STRIKES:
+                raise RateLimited(f"{type(e).__name__} na {strikes} pogingen op {url}")
+            wait = 5 * strikes
+            print(f"  ! {type(e).__name__} — opnieuw over {wait}s "
+                  f"(poging {strikes}/{MAX_STRIKES})")
+            time.sleep(wait)
+            continue
 
 
 def connect():
